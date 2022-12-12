@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
 
-export const ImageGalleryList =styled.li`
+export const GalleryItem =styled.li`
 border-radius: 2px;
 cursor: pointer;
 box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.2),
@@ -8,7 +8,7 @@ box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.2),
 `
  
 
-export  const ImageGalleryItemImage =styled.img`
+export  const Img =styled.img`
 width: 100%;
 height: 260px;
 object-fit: cover;

@@ -1,26 +1,26 @@
 import React from 'react';
-import {ImageGalleryList, ImageGalleryItemImage} from './ImageGallery.styled'
+import { GalleryItem, Img } from './ImageGallery.styled';
 import PropTypes from 'prop-types';
 
-export default class ImageGalleryItem extends React.Component {
-  render() {
-    const { id, webformatURL, largeImageURL } = this.props.hit;
-
-    return (
-      <ImageGalleryList className="ImageGalleryItem">
-        <ImageGalleryItemImage
-          onClick={this.props.onClick}
-          src={webformatURL}
-          id={id}
-          largeimg={largeImageURL}
-          alt="finding results"
-        />
-      </ImageGalleryList>
-    );
-  }
-}
-
+export const ImageGalleryItem = ({ images, openModal }) => {
+  return images.map(image => (
+    <GalleryItem key={image.id}>
+      <Img
+        src={image.webformatURL}
+        alt={image.tags}
+        onClick={() => openModal(image.largeImageURL)}
+        loading="lazy"
+      />
+    </GalleryItem>
+  ));
+};
 ImageGalleryItem.propTypes = {
-  onClick: PropTypes.func.isRequired,
-  hit: PropTypes.object,
+  openModal: PropTypes.func.isRequired,
+  images: PropTypes.arrayOf(
+    PropTypes.exact({
+      tags: PropTypes.string,
+      webformatURL: PropTypes.string.isRequired,
+      id: PropTypes.number.isRequired,
+    })
+  ),
 };
