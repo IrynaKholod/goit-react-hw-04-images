@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useEffect, useState } from 'react';
 import { Box } from './App.styled';
 import { SearchBar } from './Searchbar/SearchBar';
 import Loader from './Loader/Loader';
@@ -9,120 +9,101 @@ import { Modal } from './Modal/Modal';
 import { fetchImages } from './Api';
 import toast, { Toaster } from 'react-hot-toast';
 
-export class App extends Component {
-  state = {
-    page: 1,
-    query: '',
-    inputValue: '',
-    items: [],
-    isLoading: false,
-    largeImageURL: null,
-    total: null,
+export const App = () => {
+  const [page, setPage] = useState(1);
+  const [query, setQuery] = useState('');
+  const [inputValue, setInputValue] = useState('');
+  const [items, setItems] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [largeImageURL, setLargeImageURL] = useState(null);
+  const [total, setTotal] = useState(null);
+ 
+
+  const handleSubmit = e => {
+    e.preventDefault();
+    if (inputValue === query) {
+      return;
+    }
+    setItems([]);
+    setQuery(inputValue);
+    setPage(1);
+    setTotal(null);
   };
 
-  componentDidUpdate(_, prevState) {
-    if (
-      prevState.page !== this.state.page ||
-      prevState.query !== this.state.query
-    ) {
-      return this.update();
-    }
-  }
-
-  async update() {
-    this.setState({ isLoading: true });
-    try {
-      await fetchImages(this.state.query, this.state.page).then(res => {
-        if (!res.data.hits.length) {
-          return toast(
-            'There is no images with this request. Please, try again'
-          );
-        }
-        this.setState(prevState => {
-          return {
-            items: [...prevState.items, ...res.data.hits],
-            total: res.data.totalHits,
-          };
-        });
-      });
-    } catch (error) {
-      console.log('Error');
-    } finally {
-      this.setState({ isLoading: false });
-    }
-  }
-
-  handleSubmit = e => {
-    e.preventDefault();
-    if (this.state.inputValue === this.state.query) {
+  useEffect(() => {
+    if (query === '') {
       return;
     }
 
-    this.setState({
-      query: this.state.inputValue,
-      items: [],
-      total: null,
-      page: 1,
-    });
+    const update = async () => {
+      setIsLoading(true);
+      try {
+        await fetchImages(query, page).then(res => {
+          if (!res.data.hits.length) {
+          return toast(
+            'There is no images with this request. Please, try again'
+          );
+          }
+          setItems(prevState => [...prevState, ...res.data.hits]);
+          setTotal(res.data.totalHits);
+          setIsLoading(false);
+        });
+      } catch (error) {
+        return toast(
+          'Try again'
+        );
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    update();
+  }, [query, page]);
+
+  const handleQueryChange = e => {
+    const { value } = e.currentTarget;
+    setInputValue(value);
   };
 
-  handleQueryChange = e => {
-    const { name, value } = e.currentTarget;
-    this.setState({
-      [name]: value,
-    });
+  const showModalImage = largeImageURL => {
+    const item = items.find(item => item.largeImageURL === largeImageURL);
+    setLargeImageURL(item.largeImageURL);
   };
 
-  onClickLoadMore = () => {
-    this.setState(prevState => {
-      return { page: prevState.page + 1 };
-    });
+  const closeModal = () => {
+    setLargeImageURL(null);
+  };
+  const onClickLoadMore = () => {
+    setPage(prevState => prevState + 1);
   };
 
-  showModalImage = largeImageURL => {
-    const item = this.state.items.find(
-      item => item.largeImageURL === largeImageURL
-    );
-    this.setState({
-      showModal: {
-        largeImageURL: item.largeImageURL,
-        tags: item.tags,
-      },
-    });
-  };
-
-  closeModalImage = () => {
-    this.setState({ showModal: null });
-  };
-
-  render() {
-    const { items, total, showModal, inputValue } = this.state;
-    return (
-      <Box px={3}>
-        <SearchBar
-          onSubmit={this.handleSubmit}
-          value={inputValue}
-          onChange={this.handleQueryChange}
+   return (
+    <Box px={3}>
+      <SearchBar
+        onSubmit={handleSubmit}
+        value={inputValue}
+        onChange={handleQueryChange}
+      />
+      {items.length > 0 && (
+        <ImageGallery images={items} openModal={showModalImage} />
+      )}
+      {items.length < total && !isLoading && (
+        <ButtonLoadMore text="Load More" onClick={onClickLoadMore} />
+      )}
+      {isLoading && <Loader />}
+      {largeImageURL && (
+        <Modal
+          largeImageUrl={largeImageURL}
+          // tags={showModal.tags}
+          closeModal={closeModal}
         />
-        {items.length > 0 ? (
-          <ImageGallery images={items} openModal={this.showModalImage} />
-        ) : null}
-        {items.length < total && (
-          <ButtonLoadMore text="Load More" onClick={this.onClickLoadMore} />
-        )}
-        {this.state.isLoading && <Loader />}
-        {showModal && (
-          <Modal
-            largeImageUrl={showModal.largeImageURL}
-            tags={showModal.tags}
-            closeModal={this.closeModalImage}
-          />
-        )}
+      )}
+      <Toaster />
+    </Box>
+    
+  );
+};
 
-        
-          <Toaster />
-        
-      </Box>
-    );
-  }
-}
+
+
+
+

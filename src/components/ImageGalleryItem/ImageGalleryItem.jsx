@@ -1,6 +1,6 @@
 import React from 'react';
 import { GalleryItem, Img } from './ImageGallery.styled';
-import PropTypes from 'prop-types';
+
 
 export const ImageGalleryItem = ({ images, openModal }) => {
   return images.map(image => (
@@ -13,14 +13,4 @@ export const ImageGalleryItem = ({ images, openModal }) => {
       />
     </GalleryItem>
   ));
-};
-ImageGalleryItem.propTypes = {
-  openModal: PropTypes.func.isRequired,
-  images: PropTypes.arrayOf(
-    PropTypes.exact({
-      tags: PropTypes.string,
-      webformatURL: PropTypes.string.isRequired,
-      id: PropTypes.number.isRequired,
-    })
-  ),
 };
