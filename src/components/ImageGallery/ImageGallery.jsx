@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { ImageList } from './ImageGallery.styled';
 import { ImageGalleryItem } from '../ImageGalleryItem/ImageGalleryItem';
 
@@ -9,3 +10,8 @@ export const ImageGallery = ({ images, openModal }) => {
     </ImageList>
   );
 };
+
+
+ImageGalleryItem.propTypes = {
+  openModal: PropTypes.func.isRequired,
+  };

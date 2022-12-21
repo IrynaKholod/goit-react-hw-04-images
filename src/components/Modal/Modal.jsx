@@ -1,5 +1,6 @@
 import { ModalBox, Overlay } from './Modal.styled';
 import React from 'react';
+import PropTypes from 'prop-types';
 import { useEffect } from 'react';
 
 
@@ -30,3 +31,7 @@ export const Modal = ({ largeImageUrl, closeModal }) =>{
     );
   }
 
+  Modal.propTypes = {
+    closeModal: PropTypes.func.isRequired,
+    largeImageUrl: PropTypes.string.isRequired,
+  };

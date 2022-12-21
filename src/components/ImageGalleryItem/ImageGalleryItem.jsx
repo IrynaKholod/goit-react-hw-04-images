@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { GalleryItem, Img } from './ImageGallery.styled';
 
 
@@ -13,4 +14,16 @@ export const ImageGalleryItem = ({ images, openModal }) => {
       />
     </GalleryItem>
   ));
+};
+
+
+ImageGalleryItem.propTypes = {
+  openModal: PropTypes.func.isRequired,
+  images: PropTypes.arrayOf(
+    PropTypes.exact({
+      tags: PropTypes.string,
+      webformatURL: PropTypes.string.isRequired,
+      id: PropTypes.number.isRequired,
+    })
+  ),
 };
